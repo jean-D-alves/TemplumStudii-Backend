@@ -1,0 +1,6 @@
+@TemplumStudii_HostAddress = http://localhost:5206
+
+GET {{TemplumStudii_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
