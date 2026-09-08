@@ -15,20 +15,20 @@ namespace templumStudii.Controllers
         private readonly UserService userService = userService;
         private readonly AuthServices authServices = authServices;
 
-        [Authorize]
-        [HttpGet]
-        public async Task<ActionResult<List<User>>> ReaderAsync()
-        {
-            try
-            { 
-                List<User> response = await userService.ReaderAsync();
-                return Ok(response);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
-        }
+        //[Authorize]
+        //[HttpGet]
+        //public async Task<ActionResult<List<User>>> ReaderAsync()
+        //{
+        //    try
+        //    { 
+        //        List<User> response = await userService.ReaderAsync();
+        //        return Ok(response);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, $"Internal server error: {ex.Message}");
+        //    }
+        //}
 
         [Authorize]
         [HttpGet("me")]
@@ -50,21 +50,21 @@ namespace templumStudii.Controllers
                 Email = email
             });
         }
-        [Authorize]
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteAsync(int id)
-        {
-            try
-            {
-                var user = await userService.DeleteUserAsync(id);
-                if (user == null) return NotFound();
-                return Ok(user);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
-        }
+        //[Authorize]
+        //[HttpDelete("{id}")]
+        //public async Task<ActionResult> DeleteAsync(int id)
+        //{
+        //    try
+        //    {
+        //        var user = await userService.DeleteUserAsync(id);
+        //        if (user == null) return NotFound();
+        //        return Ok(user);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, $"Internal server error: {ex.Message}");
+        //    }
+        //}
 
         
         [HttpPost]
