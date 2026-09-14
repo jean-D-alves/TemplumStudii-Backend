@@ -11,6 +11,7 @@ services:
       - JWT__ISSUER=${JWT_ISSUER}
       - JWT__AUDIENCE=${JWT_AUDIENCE}
       - DATABASE__URL=Host=db;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
+      - ASPNETCORE_URLS=http://0.0.0.0:8080
     depends_on:
       - db
 

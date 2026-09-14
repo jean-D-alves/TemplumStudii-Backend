@@ -8,7 +8,7 @@
         public required string password { get; set; }
         public string studies { get; set; } = "";
 
-        public ICollection<Time> Times { get; set; } = new List<Time>();
+        public ICollection<Time?> Times { get; set; } = new List<Time?>();
         public ICollection<Sequence> Sequences { get; set; } = new List<Sequence>();
     }
 }

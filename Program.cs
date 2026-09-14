@@ -6,13 +6,18 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using DotNetEnv;
+using TemplumStudii.repositories;
+using TemplumStudii.converters;
 Env.Load();
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddEnvironmentVariables();
 
 
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(new TimeSpanConverter());
+});
 
 builder.Services.AddOpenApiDocument();
 builder.Services.AddOpenApi();
@@ -22,9 +27,13 @@ var databaseUrl = builder.Configuration["DATABASE:URL"];
 
 builder.Services.AddDbContext<TemplumStudiiContext>(options =>
     options.UseNpgsql(databaseUrl));
+//builder.Services.AddDbContext<TemplumStudiiContext>(options =>
+//    options.UseInMemoryDatabase("Templum"));
 
 builder.Services.AddScoped<UserRepository>();
+builder.Services.AddScoped<TimeRepository>();
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<TimeService>();
 builder.Services.AddScoped<AuthServices>();
 
 string? jwtKey = builder.Configuration["JWT:KEY"];

@@ -15,21 +15,6 @@ namespace templumStudii.Controllers
         private readonly UserService userService = userService;
         private readonly AuthServices authServices = authServices;
 
-        //[Authorize]
-        //[HttpGet]
-        //public async Task<ActionResult<List<User>>> ReaderAsync()
-        //{
-        //    try
-        //    { 
-        //        List<User> response = await userService.ReaderAsync();
-        //        return Ok(response);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return StatusCode(500, $"Internal server error: {ex.Message}");
-        //    }
-        //}
-
         [Authorize]
         [HttpGet("me")]
         public IActionResult Me()
@@ -37,6 +22,10 @@ namespace templumStudii.Controllers
             var userId =
                 User.FindFirst(
                     System.Security.Claims.ClaimTypes.NameIdentifier
+                )?.Value;
+            var name =
+                User.FindFirst(
+                    System.Security.Claims.ClaimTypes.Name
                 )?.Value;
 
             var email =
@@ -47,44 +36,54 @@ namespace templumStudii.Controllers
             return Ok(new
             {
                 UserId = userId,
+                Name = name,
                 Email = email
             });
         }
-        //[Authorize]
-        //[HttpDelete("{id}")]
-        //public async Task<ActionResult> DeleteAsync(int id)
-        //{
-        //    try
-        //    {
-        //        var user = await userService.DeleteUserAsync(id);
-        //        if (user == null) return NotFound();
-        //        return Ok(user);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return StatusCode(500, $"Internal server error: {ex.Message}");
-        //    }
-        //}
+        [Authorize]
+        [HttpDelete()]
+        public async Task<ActionResult> DeleteAsync()
+        {
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
-        
+            if (!int.TryParse(userIdClaim, out int userId))
+            {
+                return Unauthorized(new { Message = "Token inválido" });
+            }
+
+            var user = await userService.DeleteUserAsync(userId);
+            return Ok(user);
+        }
+
+
         [HttpPost]
-        public async Task<ActionResult<User>> CreateAsync([FromBody]User request)
+        public async Task<ActionResult> CreateAsync([FromBody] User request)
         {
             try
             {
                 User user = await userService.CreateAsync(request);
-                if (user == null) return NotFound();
-                UserResponse response = new UserResponse
+                string token = authServices.GenerateToken(user);
+
+                UserResponse userResponse = new UserResponse
                 {
                     Id = user.Id,
                     Name = user.name,
                     Email = user.email,
                     Studies = user.studies
                 };
-                return Ok(response);
+
+                return Ok(new { User = userResponse, Token = token });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(new { Message = ex.Message }); 
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { Message = ex.Message });
             }
             catch (Exception ex)
-            {   
+            {
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }

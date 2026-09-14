@@ -48,37 +48,56 @@ namespace templumStudii.services
         }
         public async Task<User> GetUserByEmailAsync(LoginRequest request)
         {
-            User? user = await _userRepository.GetUserByEmailAsync(request.Email);
-            if (user == null)
-            {
-                throw new KeyNotFoundException($"User not found");
-            }
+            string email = request.Email.Trim().ToLowerInvariant();
+            User user = await VerifyUserByEmailAsync(email);
+
             bool isPasswordValid = BCrypt.Net.BCrypt.Verify(request.Password, user.password);
             if (!isPasswordValid)
             {
-                throw new Exception("Password or email is invalid");
+                throw new UnauthorizedAccessException("Password or email is invalid");
             }
             return user;
         }
 
-        public async Task<User?> DeleteUserAsync(int id)
+        public async Task<User> VerifyUserByEmailAsync(string email)
+        {
+            User? user = await _userRepository.GetUserByEmailAsync(email);
+            if (user == null)
+            {
+                throw new KeyNotFoundException($"User not found");
+            }
+
+            return user;
+        }
+        public async Task<User> DeleteUserAsync(int id)
         {
             User? user = await _userRepository.DeleteUserAsync(id);
-            if (user == null) {
-                throw new UnauthorizedAccessException($"User with id {id} not found");
+            if (user == null)
+            {
+                throw new KeyNotFoundException($"User with id {id} not found");
             }
             return user;
         }
         public async Task<User> CreateAsync(User user)
         {
-            if (!IsValidEmail(user.email))
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            string email = user.email.Trim().ToLowerInvariant();
+            if (!IsValidEmail(email))
             {
                 throw new ArgumentException("Email or password invalid");
             }
-            if (user == null)
+
+            User? existingUser = await _userRepository.GetUserByEmailAsync(email);
+            if (existingUser != null)
             {
-                throw new ArgumentNullException();
+                throw new InvalidOperationException("Email already in use");
             }
+
+            user.email = email;
             user.password = BCrypt.Net.BCrypt.HashPassword(user.password);
             User response = await _userRepository.CreateAsync(user);
 
