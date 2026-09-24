@@ -17,28 +17,33 @@ namespace templumStudii.Controllers
 
         [Authorize]
         [HttpGet("me")]
-        public IActionResult Me()
+        public async Task<ActionResult> Me()
         {
             var userId =
                 User.FindFirst(
                     System.Security.Claims.ClaimTypes.NameIdentifier
                 )?.Value;
-            var name =
-                User.FindFirst(
-                    System.Security.Claims.ClaimTypes.Name
-                )?.Value;
 
-            var email =
-                User.FindFirst(
-                    System.Security.Claims.ClaimTypes.Email
-                )?.Value;
-
-            return Ok(new
+            if (!int.TryParse(userId, out int id))
             {
-                UserId = userId,
-                Name = name,
-                Email = email
-            });
+                return Unauthorized(new { Message = "Token inválido" });
+            }
+
+            try
+            {
+                var user = await userService.GetUserByIdAsync(id);
+                return Ok(new
+                {
+                    Id = user.Id,
+                    Name = user.name,
+                    Email = user.email,
+                    Studies = user.studies
+                });
+            }
+            catch (KeyNotFoundException)
+            {
+                return Unauthorized(new { Message = "Usuário não encontrado" });
+            }
         }
         [Authorize]
         [HttpDelete()]
