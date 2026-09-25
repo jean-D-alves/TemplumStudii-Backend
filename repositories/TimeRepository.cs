@@ -29,6 +29,12 @@ namespace TemplumStudii.repositories
         {
             return await _context.Times.FirstOrDefaultAsync(t => t.UserId == userId);
         }
+        public async Task<Time> DeleteTimeAsync(Time time)
+        {
+            _context.Times.Remove(time);
+            await _context.SaveChangesAsync();
+            return time;
+        }
         public async Task SaveChangesAsync()
         {
             await _context.SaveChangesAsync();

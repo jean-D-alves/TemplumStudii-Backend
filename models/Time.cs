@@ -6,6 +6,7 @@ namespace templumStudii.models
         public TimeSpan AccumulatedTime { get; set; } 
         public DateTime? StartedAt { get; set; }        
         public TimeSpan DefinedTime { get; set; }
+        public DateTime DefinedDate { get; set; }
         public int UserId { get; set; }
         public User? User { get; set; }
     }
