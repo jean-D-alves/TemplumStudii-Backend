@@ -88,5 +88,24 @@ namespace templumStudii.services {
                 GoalReached = time.AccumulatedTime >= time.DefinedTime
             };
         }
+        public async Task<TimeResponse> DeleteAsync(int userId)
+        {
+            var time = await _repository.FindByUserIdAsync(userId);
+            if (time is null)
+                throw new KeyNotFoundException("Registro de tempo não encontrado.");
+
+            var deleted = await _repository.DeleteAsync(time);
+            if (deleted is null)
+                throw new InvalidOperationException("Não foi possível excluir o registro de tempo.");
+
+            return new TimeResponse
+            {
+                Id = deleted.Id,
+                DefinedTime = deleted.DefinedTime,
+                AccumulatedTime = deleted.AccumulatedTime,
+                StartedAt = deleted.StartedAt,
+                ServerNow = DateTime.UtcNow
+            };
+        }
     }
 }

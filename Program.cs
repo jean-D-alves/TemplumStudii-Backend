@@ -25,10 +25,10 @@ builder.Services.AddOpenApi();
 
 var databaseUrl = builder.Configuration["DATABASE:URL"];
 
-builder.Services.AddDbContext<TemplumStudiiContext>(options =>
-    options.UseNpgsql(databaseUrl));
 //builder.Services.AddDbContext<TemplumStudiiContext>(options =>
-//    options.UseInMemoryDatabase("Templum"));
+//    options.UseNpgsql(databaseUrl));
+builder.Services.AddDbContext<TemplumStudiiContext>(options =>
+    options.UseInMemoryDatabase("Templum"));
 
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<TimeRepository>();
@@ -75,11 +75,11 @@ builder.Services
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<TemplumStudiiContext>();
-    db.Database.Migrate();
-}
+//using (var scope = app.Services.CreateScope())
+//{
+//    var db = scope.ServiceProvider.GetRequiredService<TemplumStudiiContext>();
+//    db.Database.Migrate();
+//}
 
 if (app.Environment.IsDevelopment())
 {
