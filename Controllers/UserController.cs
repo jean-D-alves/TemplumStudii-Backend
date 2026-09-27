@@ -17,7 +17,7 @@ namespace templumStudii.Controllers
 
         [Authorize]
         [HttpGet("me")]
-        public IActionResult Me()
+        public async IActionResult Me()
         {
             var userId =
                 User.FindFirst(
