@@ -6,6 +6,7 @@
         public TimeSpan AccumulatedTime { get; set; }
         public DateTime? StartedAt { get; set; }
         public TimeSpan DefinedTime { get; set; }
+        public DateTime DefinedDate { get; set; }
         public DateTime ServerNow { get; set; }
     }
 }

@@ -111,5 +111,26 @@ namespace TemplumStudii.Controllers
                 return StatusCode(500, new { message = "Erro interno ao parar o cronômetro." });
             }
         }
+
+        [HttpGet("validate")]
+        [Authorize]
+        public async Task<IActionResult> Validate()
+        {
+            try
+            {
+                int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+                var result = await _timeService.ValidateTimeAsync(userId);
+                return Ok(new { message = result });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erro ao validar o tempo do usuário");
+                return StatusCode(500, new { message = "Erro interno ao validar o tempo." });
+            }
+        }
     }
 }
